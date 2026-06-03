@@ -271,11 +271,11 @@ function getNoteFrequency(baseMidiNote, consonant, vowel) {
 
 // --- Audio Assets for "Voice/Acapella" Mode ---
 const VOICE_FILES = {
-  doors: "https://cdn.jsdelivr.net/gh/annatca/metro-audio@main/metro-doors.m4a",   
-  passing: "https://cdn.jsdelivr.net/gh/annatca/metro-audio@main/metro-passing.m4a", 
-  accel: "https://cdn.jsdelivr.net/gh/annatca/metro-audio@main/metro-accel.m4a",   
-  decel: "https://cdn.jsdelivr.net/gh/annatca/metro-audio@main/metro-decel.m4a",   
-  moving: "https://cdn.jsdelivr.net/gh/annatca/metro-audio@main/metro-running.m4a"   
+  doors: "/audio/metro-doors.m4a",   
+  passing: "/audio/metro-passing.m4a", 
+  accel: "/audio/metro-accel.m4a",   
+  decel: "/audio/metro-decel.m4a",   
+  moving: "/audio/metro-running.m4a"   
 };
 
 // Mathematical Timetable Generator
