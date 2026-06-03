@@ -318,28 +318,36 @@ const SCHEDULES = (() => {
     const fwdSched = createSchedule(line.stations, line.tripMinutes, STOP_SECONDS, STATIONS);
     const bwdSched = createSchedule([...line.stations].reverse(), line.tripMinutes, STOP_SECONDS, STATIONS);
 
-    // Pre-calculate every departure time for the whole day based on realistic rush hours
-    const departures = [];
-    let t = 5 * 3600; // First train at 5:00 AM
-    const endTime = 25.5 * 3600; // Last train around 1:30 AM the next day
-    
-    while (t < endTime) {
-       departures.push(t);
-       const hour = t / 3600;
-       
-       let multiplier = 1;
-       if (hour < 7.5) multiplier = 1.5; // Early Morning
-       else if (hour < 9.5) multiplier = 0.8; // Morning Rush Hour!
-       else if (hour < 17) multiplier = 1.5; // Mid-day
-       else if (hour < 20) multiplier = 1.0; // Evening Rush
-       else if (hour < 23) multiplier = 1.5; // Night
-       else multiplier = 2.5; // Late Night
-       
-       t += line.trainIntervalMinutes * multiplier * 60;
-    }
+    // Helper to generate departures with morning start staggers and organic variations (±10 to ±45 seconds)
+    const generateDepartures = () => {
+      const departures = [];
+      // Stagger the first train of the day by a random amount (-60 to +120 seconds)
+      const startStagger = Math.floor(Math.random() * 180) - 60;
+      let t = 5 * 3600 + startStagger; 
+      const endTime = 25.5 * 3600; // Last train around 1:30 AM the next day
+      
+      while (t < endTime) {
+         // Add a randomized delay to individual train departures (±10 to ±45 seconds)
+         const randomDelay = (Math.random() < 0.5 ? -1 : 1) * (10 + Math.floor(Math.random() * 35));
+         departures.push(t + randomDelay);
+         
+         const hour = t / 3600;
+         let multiplier = 1;
+         if (hour < 7.5) multiplier = 1.5; // Early Morning
+         else if (hour < 9.5) multiplier = 0.8; // Morning Rush Hour!
+         else if (hour < 17) multiplier = 1.5; // Mid-day
+         else if (hour < 20) multiplier = 1.0; // Evening Rush
+         else if (hour < 23) multiplier = 1.5; // Night
+         else multiplier = 2.5; // Late Night
+         
+         t += line.trainIntervalMinutes * multiplier * 60;
+      }
+      return departures;
+    };
 
-    s[`${line.id}_fwd`] = { schedule: fwdSched, departures };
-    s[`${line.id}_bwd`] = { schedule: bwdSched, departures };
+    // Stagger fwd and bwd directions differently to break mirroring
+    s[`${line.id}_fwd`] = { schedule: fwdSched, departures: generateDepartures() };
+    s[`${line.id}_bwd`] = { schedule: bwdSched, departures: generateDepartures() };
   });
   return s;
 })();
